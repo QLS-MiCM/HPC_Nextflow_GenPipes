@@ -8,7 +8,7 @@ Participants will be introduced to high-performance computing (HPC) infrastructu
 - Digital Research Alliance of Canada (Compute Canada)
 - Nextflow
 - Genpipes
-- Hands-on
+- [Hands-on](https://html-preview.github.io/?url=https://github.com/AlineRngl/HPC_Nextflow_GenPipes/blob/main/Exercises/RNAseq_bootcamp_Module5_files/RNAseq_bootcamp_Module5.html)
 
 ## References
 
