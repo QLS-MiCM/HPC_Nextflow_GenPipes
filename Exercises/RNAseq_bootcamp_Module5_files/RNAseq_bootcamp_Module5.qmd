@@ -1,0 +1,224 @@
+---
+title: "Module 5"
+subtitle: "Module 5: HPC, Nextflow and Genpipes"
+description: "Practical session"
+author: "Alie Rangel (Adapted from Rola Dali)"
+date: 2026-05-01
+date-format: short
+title-block-banner: "#ffffff"
+title-block-banner-color: "#2fc1c1"
+format:
+  html:
+    highlight-style: atom-one
+    sidebar:
+      contents: auto
+    code-fold: false
+    css: style.css
+#    code-block-bg: "#d8e6f4"
+#    code-block-border-left: "#0275e1"
+    toc: true
+    toc-location: left
+    toc-title: "HPC, Nextflow and Genpipes"
+    toc-expand: 4
+    toc-depth: 4
+    embed-resources: true
+    other-links:
+
+      - text: GitHub
+        icon: github
+        href: https://github.com/QLS-MiCM/HPC_Nextflow_GenPipes
+    grid:
+      sidebar-width: 300px
+      body-width: 1000px
+      margin-width: 100px
+      gutter-width: 5rem
+engine: knitr
+execute:
+  echo: true
+
+---
+```{r,echo=FALSE}
+htmltools::img(src = knitr::image_uri("images/MiCM.png"), 
+               alt = 'logo', 
+               style = 'position:absolute; top:0px; left:30px; padding:10px; max-width:25%;')
+```
+```{r,echo=FALSE}
+htmltools::img(src = knitr::image_uri("images/C3G-Logo-Colour-EN.png"), 
+               alt = 'logo', 
+               style = 'position:absolute; top:120px; left:30px; padding:10px; max-width:20%;')
+```
+## Overview
+This session will introduce you to how to prepare input files to run Nextlfow and GenPipes RNAseq pipelines.
+
+## Nextflow
+Use the online [nf-core tool online](https://oldsite.nf-co.re/launch) to create a configuration file for the rnaseq pipeline version 3.26.0.
+
+Use the following parameters:
+
+- Path to the sample sheet: `/home/User/projects/rrg-PIname/User/RNAseq_Module5/Data`
+- Use the singularity profile
+- Output directory: `/home/User/scratch/RNAseq_Module5/`
+- Use the human genome as reference: GRCh38
+- Use fastp trimmer
+- Align using bowtie2
+
+<details>
+<summary>Click to view example output </summary>
+::: {style="max-height: 200px; overflow: auto; border: 1px solid #ccc; padding: 10px; background-color: #f9f6f6;"}
+
+nf-params.json
+
+```text
+{
+    "input": "\/home\/User\/projects\/rrg-PIname\/User\/RNAseq_Module5\/Readset.csv",
+    "outdir": "\/home\/User\/scratch\/RNAseq_Module5\/",
+    "genome": "GRCh38",
+    "trimmer": "fastp",
+    "aligner": "bowtie2_salmon"
+}
+```
+:::
+</details>
+
+## Genpipes
+
+### Preparing input files
+
+The input files to run this pipeline are the following:
+
+- All pipelines require 2 files:
+
+  - [Configuration “.ini” file]{.underline style="color: #a80707;"}: contains parameters used by tools in the pipeline
+
+  - [Readset file]{.underline style="color: #f38907;"}: contains details about your samples
+
+- Optional:
+
+  - [Steps selection]{.underline style="color: #06c31c;"}: defines the steps of the pipeline to be run
+
+- A few pipelines require:
+
+  - [Design file]{.underline style="color: #c309d8;"}:  contains details about sample comparisons (e.g. RNA-seq, ChiP-seq, etc…)
+
+![](images/Genpipes_input.png){width=50% fig-align="center" fig-cap=""}
+
+####  Choosing Configuration / .ini files
+1. Select the base .ini file for the dnaseq pipeline `$GENPIPES_INIS/rnaseq_light/rnaseq_light.base.ini`
+2. Select the .ini file for the server you are using, for example Narval: `$GENPIPES_INIS/common_ini/narval.ini`
+3. Select the genome .ini file. Here we will use human genome pipeline: `$MUGQIC_INSTALL_HOME/genomes/species/Mus_musculus.GRCm38/Mus_musculus.GRCm38.ini`
+
+#### Creating the Readset file
+The readset file is a tab separated file that describes the sequencing data and to which sample it belongs to:
+
+ - Readset used for analysis
+ - Samples to be merged
+ - Location of FASTQ/BAM input files.
+
+Create a Readset file in Excel using the samples from the GSE311541 [GEO accession muber](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE311541). These samples come from Mus musculus embryos with and without cardiomyocyte-specific Pkn2 knockout (cKO). Prepare a readset file for all samples.
+
+Start by pasting this headers in a new Excel sheet:
+```markdown
+Sample  Readset Library RunType Run Lane  Adapter1  Adapter2  QualityOffset BED FASTQ1  FASTQ2
+```
+
+::: {.callout-tip}
+Look at what library preparation kit they used to choose the adapters. Some of the most popular used kits can be found on this [page](https://support-docs.illumina.com/SHARE/AdapterSequences/Content/AdapterSeq.htm).
+::: 
+
+Make sure to save it as a tab-separated file.
+
+<details>
+<summary>Click to view answer </summary>
+
+::: {.table-dna }
+
+  | Sample | Readset | Library | RunType | Run | Lane | Adapter1 | Adapter2 | QualityOffset | BED | FASTQ1 | FASTQ2 |
+  |--------|---------|---------|---------|-----|------|----------|----------|---------------|-----|--------|--------|
+  | GSM9326769_ko | R1 |  | paired_end | SRR36201369 | 1 | AGATCGGAAGAGCACACGTCTGAACTCCAGTCA | AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT |  |  | GSM9326769_R1.fastq.gz | GSM9326769_R2.fastq.gz|
+  | GSM9326770_ko | R1 |  | paired_end | SRR36201377 | 1 | AGATCGGAAGAGCACACGTCTGAACTCCAGTCA | AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT |  |  | GSM9326770_R1.fastq.gz | GSM9326770_R2.fastq.gz|
+  | GSM9326771_ko | R1 |  | paired_end | SRR36201376 | 1 | AGATCGGAAGAGCACACGTCTGAACTCCAGTCA | AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT |  |  | GSM9326771_R1.fastq.gz | GSM9326771_R2.fastq.gz|
+  | GSM9326772_ko | R1 |  | paired_end | SRR36201375 | 1 | AGATCGGAAGAGCACACGTCTGAACTCCAGTCA | AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT |  |  | GSM9326772_R1.fastq.gz | GSM9326772_R2.fastq.gz|
+  | GSM9326773_ctrl | R1 |  | paired_end | SRR36201378 | 1 | AGATCGGAAGAGCACACGTCTGAACTCCAGTCA | AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT |  |  | GSM9326773_R1.fastq.gz | GSM9326773_R2.fastq.gz
+  | GSM9326774_ctrl | R1 |  | paired_end | SRR36201374 | 1 | AGATCGGAAGAGCACACGTCTGAACTCCAGTCA | AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT |  |  | GSM9326774_R1.fastq.gz | GSM9326774_R2.fastq.gz
+  | GSM9326775_ctrl | R1 |  | paired_end | SRR36201373 | 1 | AGATCGGAAGAGCACACGTCTGAACTCCAGTCA | AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT |  |  | GSM9326775_R1.fastq.gz | GSM9326775_R2.fastq.gz
+  | GSM9326776_ctrl | R1 |  | paired_end | SRR36201372 | 1 | AGATCGGAAGAGCACACGTCTGAACTCCAGTCA | AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT |  |  | GSM9326776_R1.fastq.gz | GSM9326776_R2.fastq.gz
+
+:::
+</details>
+
+#### Creating the Design file
+Many pipelines need a design file to indicate the comparison to do differential expression analysis and statistical modeling.
+
+Use Excel to create a design file that compares the two groups of sample used to build the Readset file (control vs knockout). 
+
+Start by pasting these headers in a new Excel sheet:
+```markdown
+Sample  Contrast1
+```
+
+::: {.callout-note}
+The sample names should be written exactly as in the “Sample” column of the Readset file.
+:::
+
+Make sure to save it as a tab-separated file.
+
+<details>
+<summary>Click to view answer </summary>
+
+::: {.table-dna }
+
+  | Sample | Contrast1 |
+  |--------|---------|
+  | GSM9326769_ko | 1 |
+  | GSM9326770_ko | 1 |
+  | GSM9326771_ko | 1 |
+  | GSM9326772_ko | 1 |
+  | GSM9326773_ctrl | 2 |
+  | GSM9326774_ctrl | 2 |
+  | GSM9326775_ctrl | 2 |
+  | GSM9326776_ctrl | 2 |
+
+:::
+</details>
+
+### Creating GenPipes command script
+You are ready to run the GenPipes command to generate the pipeline script once you have all the input elements for the pipeline:
+
+- configuration files are identified
+- select alla steps in the rnaseq_light pipeline
+- readset and design files are ready
+
+The GenPipes command will look like this:
+```{bash}
+#| eval: false
+genpipes rnaseq_light 
+	-c $GENPIPES_INIS/rnaseq_light/rnaseq_light.base.ini \
+	$GENPIPES_INIS/common_ini/narval.ini \
+	$MUGQIC_INSTALL_HOME/genomes/species/Mus_musculus.GRCm38/Mus_musculus.GRCm38.ini \
+	-r readset.txt \
+	-s 1-8 \
+	-d design.txt \
+	-g rnaseq_light_genpipes.sh\
+	-o /homo/USER/scratch/c3g-workshop-M3/Genpipes_output \
+```
+
+You will get the GenPipes script with all the nessesary information and dependence structure to run the pipeline, under the name of `rnaseq_light_genpipes.sh`.
+
+::: {.callout-caution}
+The Genpipes command does not run the pipeline. You still need to execute the script that was created.
+```{bash}
+#| eval: false
+bash rnaseq_light_genpipes.sh
+```
+::: 
+
+### Outputs
+As jobs finish, log files will be created in the “job_output” folder.​
+
+Additionally, for every analysis step, a folder will be created with the appropriate output files.
+
+Look at the files in the following link to get familiar to [GenPipes rnaseq pipeline output](https://drive.google.com/drive/folders/10VYIhmSlIqk_Pemm5Em_148axZx4Tmt0?usp=sharing). It is a good time to ask questions about the files.
+
+::: {.content-visible}
+<div style="margin-bottom: 1000px;"></div>
+:::
