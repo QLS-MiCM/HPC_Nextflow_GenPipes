@@ -1,0 +1,93 @@
+/* styles.css */
+.quarto-title-block.default {
+ /*    border-bottom: 8px solid #0275e1; /* Customize color and thickness */
+    padding: 0px; /* Adjust spacing */
+    margin-left: 0px;
+    margin-bottom: 0px;
+}
+.quarto-title-block .title {
+    margin-bottom: 0px;
+    margin-top: 0px;
+}
+
+.quarto-title-block .subtitle {
+    margin-bottom: 0px;
+    margin-top: 0px;
+}
+.quarto-title-block .description {
+    margin-bottom: 0px;
+    margin-top: 0px;
+}
+.quarto-title-block .quarto-title-meta {
+    margin-top: 0;
+}
+
+.title {
+  font-size:60px;
+}
+
+.subtitle {
+  font-size:40px;
+}
+
+.description {
+  font-size: 18px;
+}
+
+/* change color of active selection in the table of contents (toc) */
+
+.sidebar nav[role="doc-toc"] ul ul > li >  a.active {
+    color: white !important;
+    background-color: #2fc1c1;
+
+}
+
+.sidebar nav[role="doc-toc"] ul > li >  a.active {
+    color: white !important;
+    background-color: #2fc1c1;
+
+}
+
+/* make selected element in toc smooth */
+.sidebar nav[role="doc-toc"] a {
+    display: block;
+    padding: 4px 8px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.sidebar nav[role="doc-toc"] a:hover {
+    background-color: #e6f2ff;
+    color: #000;
+}
+
+/* style of title of toc */
+.sidebar nav[role="doc-toc"] h2 {
+    margin-bottom: 10px;
+    font-weight: 800;
+    border-bottom: 2px solid  #2fc1c1; 
+}
+
+/* style tables */
+.table-dna table {
+  border-collapse: collapse;
+  font-size: 0.6em;
+}
+
+.table-dna thead th {
+  background-color: #2fc1c1; /* genomics green */
+  color: white;
+}
+
+.table-dna td {
+  background-color:white;
+}
+
+
+
+.table-dna tr:hover td {
+  background-color: #e3e4e5;
+}
+
+
